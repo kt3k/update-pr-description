@@ -1,0 +1,19 @@
+name: 'Update Pull Request Description'
+description: 'GitHub Action that updates the pull request description and title'
+author: 'Yoshiya Hinosawa'
+runs:
+  using: 'node12'
+  main: 'index.js'
+inputs:
+  token:
+    description: 'The GITHUB_TOKEN secret'
+    required: true
+  title:
+    description: 'The title of the PR'
+    default: ''
+  body:
+    description: 'The body of the PR'
+    default: ''
+  base:
+    description: 'Base branch of the PR. Default is master.'
+    default: master
