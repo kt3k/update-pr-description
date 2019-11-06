@@ -13,7 +13,7 @@ async function run() {
     base: core.getInput('base'),
   }
 
-  const source = github.context.payload.push.head.ref.replace(/^refs\/heads\//, '')
+  const source = github.ref.replace(/^refs\/heads\//, '')
 
   const octokit = new github.GitHub(inputs.token);
 
