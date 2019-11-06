@@ -12,8 +12,9 @@ async function run() {
     body: core.getInput('body'),
     base: core.getInput('base'),
   }
+  console.log(github)
 
-  const source = github.ref.replace(/^refs\/heads\//, '')
+  const source = github.context.ref.replace(/^refs\/heads\//, '')
 
   const octokit = new github.GitHub(inputs.token);
 
