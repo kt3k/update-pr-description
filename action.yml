@@ -5,16 +5,16 @@ runs:
   using: 'node12'
   main: 'index.js'
 inputs:
-  token:
+  github_token:
     description: 'The GITHUB_TOKEN secret'
     required: true
-  title:
+  pr_title:
     description: 'The title of the PR'
     default: ''
-  body:
+  pr_body:
     description: 'The body of the PR'
     default: ''
-  base:
+  destination_branch:
     description: 'Base branch of the PR. Default is master.'
     default: master
 branding:

@@ -1,6 +1,6 @@
 {
   "name": "update-pull-request-description-on-push",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "Update pull request description on push",
   "main": "index.js",
   "scripts": {
