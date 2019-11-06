@@ -1,4 +1,4 @@
-name: 'Update Pull Request Description'
+name: 'Update Pull Request Description on Push'
 description: 'GitHub Action that updates the pull request description and title'
 author: 'Yoshiya Hinosawa'
 runs:
@@ -17,3 +17,6 @@ inputs:
   base:
     description: 'Base branch of the PR. Default is master.'
     default: master
+branding:
+  icon: git-pull-request
+  color: green

@@ -1,0 +1,29 @@
+{
+  "name": "update-pull-request-description-on-push",
+  "version": "0.1.1",
+  "description": "Update pull request description on push",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kt3k/update-pr-description.git"
+  },
+  "keywords": [
+    "github",
+    "actions",
+    "pull",
+    "request"
+  ],
+  "author": "Yoshiya Hinosawa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kt3k/update-pr-description/issues"
+  },
+  "homepage": "https://github.com/kt3k/update-pr-description#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/github": "^1.1.0"
+  }
+}
