@@ -22,7 +22,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: update-pull-request
-      uses: kt3k/update-pr-description@v1.0.0
+      uses: kt3k/update-pr-description@v1.0.1
       with:
         pr_body: "**some description**"
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -55,7 +55,7 @@ jobs:
         destination_branch: release
         pr_title: Release
     - name: update-pull-request
-      uses: kt3k/update-pr-description@v1.0.0
+      uses: kt3k/update-pr-description@v1.0.1
       with:
         pr_body: ${{ steps.description.outputs.description }}
         destination_branch: release
