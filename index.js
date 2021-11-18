@@ -47,4 +47,10 @@ async function run() {
   await octokit.pulls.update(params);
 }
 
-run();
+run()
+  .then(() => {
+    core.info(`Done`);
+  })
+  .catch((e) => {
+    core.setFailed(e.message);
+  });
