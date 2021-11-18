@@ -32,7 +32,7 @@ const run = async () => {
     throw new Error(`No open pull requests found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
   }
 
-  const { number: pullNumber } = pullRequest;
+  const { number: pullNumber, base: { ref: pullRequestTargetBranch } } = pullRequest;
   core.info(`Pull request #${pullNumber} has been found for  a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
 
   const params = {
@@ -50,7 +50,7 @@ const run = async () => {
     params.body = prBody;
   }
 
-  if (baseBranch) {
+  if (baseBranch && baseBranch !== pullRequestTargetBranch) {
     core.info(`Pull request #${pullNumber}'s base branch will be set to "${baseBranch}"`);
     params.title = prTitle;
   }

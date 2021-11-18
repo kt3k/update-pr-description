@@ -4,6 +4,7 @@ author: 'Yoshiya Hinosawa'
 runs:
   using: 'node12'
   main: 'index.js'
+  pre: 'deps.js'
 inputs:
   github_token:
     description: 'The GITHUB_TOKEN secret'
