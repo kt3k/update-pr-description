@@ -1,55 +1,71 @@
-const github = require("@actions/github");
-const core = require("@actions/core");
+const github = require('@actions/github');
+const core = require('@actions/core');
 
-async function run() {
-  const inputs = {
-    githubToken: core.getInput("github_token", { required: true }),
-    prTitle: core.getInput("pr_title"),
-    prBody: core.getInput("pr_body"),
-    destinationBranch: core.getInput("destination_branch")
-  };
+const run = async () => {
+  const githubToken = core.getInput('github_token', { required: true });
+  const prTitle = core.getInput('pr_title');
+  const prBody = core.getInput('pr_body');
+  const baseBranch = core.getInput('destination_branch');
+  const sourceBranch = github.context.ref.replace(/^refs\/heads\//, '');
 
-  const base = inputs.destinationBranch;
-  const source = github.context.ref.replace(/^refs\/heads\//, "");
-
-  const octokit = github.getOctokit(inputs.githubToken);
-  core.info(`Look up a pull request with source=${source} base=${base}`);
-  const { data: pulls } = await octokit.rest.pulls.list({
+  const credentials = {
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
-    base,
-    head: `${github.context.repo.owner}:${source}`
+  };
+
+  const octokit = github.getOctokit(githubToken);
+  core.info(`Looking up a pull request with a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
+
+  const branchHead = `${credentials.owner}:${sourceBranch}`;
+  const { data: pulls } = await octokit.rest.pulls.list({
+    ...credentials,
+    base: baseBranch,
+    head: branchHead,
   });
 
-  if (pulls.length == 0) {
-    core.info(`No such pull request: source=${source} base=${base}`);
-    return;
+  if (pulls.length === 0) {
+    throw new Error(`No pull request found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
   }
 
-  const { number } = pulls[0];
-  core.info(`Found pull request #${number}`);
+  const pullRequest = pulls.find((p) => p.state === 'open');
+  if (pullRequest == null) {
+    throw new Error(`No open pull requests found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
+  }
+
+  const { number: pullNumber, base: { ref: pullRequestTargetBranch } } = pullRequest;
+  core.info(`Pull request #${pullNumber} has been found for  a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
 
   const params = {
-    owner: github.context.repo.owner,
-    repo: github.context.repo.repo,
-    pull_number: number
+    ...credentials,
+    pull_number: pullNumber,
   };
 
-  if (inputs.prBody) {
-    core.info(`Updating with body=${inputs.prBody}`);
-    params.body = inputs.prBody;
+  if (prTitle) {
+    core.info(`Pull request #${pullNumber}'s title will be set to "${prTitle}"`);
+    params.title = prTitle;
   }
-  if (inputs.prTitle) {
-    core.info(`Updating with title=#${inputs.prTitle}`);
-    params.title = inputs.prTitle;
+
+  if (prBody) {
+    core.info(`Pull request #${pullNumber}'s body will be set to "${prBody}"`);
+    params.body = prBody;
   }
-  await octokit.rest.pulls.update(params);
-}
+
+  if (baseBranch && baseBranch !== pullRequestTargetBranch) {
+    core.info(`Pull request #${pullNumber}'s base branch will be set to "${baseBranch}"`);
+    params.title = prTitle;
+  }
+
+  const url = `/repos/${credentials.owner}/${credentials.repo}/pulls/${pullNumber}`;
+
+  core.info(`Making a PATCH request to "${url}" with params "${JSON.stringify(params)}"`);
+  await octokit.request(`PATCH ${url}`, params);
+};
 
 run()
   .then(() => {
-    core.info(`Done`);
+    core.info('Done.');
   })
   .catch((e) => {
-    core.setFailed(e.message);
+    core.error('Cannot update the pull request.');
+    core.setFailed(e.stack || e.message);
   });
