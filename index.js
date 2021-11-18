@@ -13,9 +13,8 @@ async function run() {
   const source = github.context.ref.replace(/^refs\/heads\//, "");
 
   const octokit = github.getOctokit(inputs.githubToken);
-
   core.info(`Look up a pull request with source=${source} base=${base}`);
-  const { data: pulls } = await octokit.pulls.list({
+  const { data: pulls } = await octokit.rest.pulls.list({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
     base,
@@ -44,7 +43,7 @@ async function run() {
     core.info(`Updating with title=#${inputs.prTitle}`);
     params.title = inputs.prTitle;
   }
-  await octokit.pulls.update(params);
+  await octokit.rest.pulls.update(params);
 }
 
 run()
