@@ -71,5 +71,7 @@ run()
     core.error('Cannot update the pull request.');
     if (failOnError) {
       core.setFailed(e.stack || e.message);
+    } else {
+      core.error(e.stack || e.message);
     }
   });
