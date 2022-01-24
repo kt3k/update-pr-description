@@ -6,6 +6,8 @@ const run = async () => {
   const prTitle = core.getInput('pr_title');
   const prBody = core.getInput('pr_body');
   const baseBranch = core.getInput('destination_branch');
+  // Github boolean inputs are strings https://github.com/actions/runner/issues/1483
+  const failOnError = core.getInput('fail_on_error') == 'true';
   const sourceBranch = github.context.ref.replace(/^refs\/heads\//, '');
 
   const credentials = {
@@ -67,5 +69,7 @@ run()
   })
   .catch((e) => {
     core.error('Cannot update the pull request.');
-    core.setFailed(e.stack || e.message);
+    if (failOnError) {
+      core.setFailed(e.stack || e.message);
+    }
   });
