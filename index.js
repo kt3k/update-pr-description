@@ -6,8 +6,6 @@ const run = async () => {
   const prTitle = core.getInput('pr_title');
   const prBody = core.getInput('pr_body');
   const baseBranch = core.getInput('destination_branch');
-  // Github boolean inputs are strings https://github.com/actions/runner/issues/1483
-  const failOnError = core.getInput('fail_on_error') == 'true';
   const sourceBranch = github.context.ref.replace(/^refs\/heads\//, '');
 
   const credentials = {
@@ -62,6 +60,9 @@ const run = async () => {
   core.info(`Making a PATCH request to "${url}" with params "${JSON.stringify(params)}"`);
   await octokit.request(`PATCH ${url}`, params);
 };
+
+// Github boolean inputs are strings https://github.com/actions/runner/issues/1483
+const failOnError = core.getInput('fail_on_error') == 'true';
 
 run()
   .then(() => {
