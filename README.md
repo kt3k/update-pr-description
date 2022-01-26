@@ -82,6 +82,10 @@ The body of the PR
 
 Base branch of the PR. Default is master.
 
+### `fail_on_error`
+
+Option to mark the job as failed in case there are errors during the action execution. Default is 'true'.
+
 ## Outputs
 
 This action has no outputs.

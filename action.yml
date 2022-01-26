@@ -18,6 +18,10 @@ inputs:
   destination_branch:
     description: 'Base branch of the PR. Default is master.'
     default: master
+  fail_on_error:
+    description: 'Raise an exception and mark the action as failed in case of error'
+    default: 'true'
+    required: false
 branding:
   icon: git-pull-request
   color: green

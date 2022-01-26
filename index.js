@@ -61,11 +61,18 @@ const run = async () => {
   await octokit.request(`PATCH ${url}`, params);
 };
 
+// Github boolean inputs are strings https://github.com/actions/runner/issues/1483
+const failOnError = core.getInput('fail_on_error') == 'true';
+
 run()
   .then(() => {
     core.info('Done.');
   })
   .catch((e) => {
     core.error('Cannot update the pull request.');
-    core.setFailed(e.stack || e.message);
+    if (failOnError) {
+      core.setFailed(e.stack || e.message);
+    } else {
+      core.error(e.stack || e.message);
+    }
   });
