@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/kt3k/update-pr-description#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.9.1",
     "@actions/github": "^5.0.0"
   }
 }
