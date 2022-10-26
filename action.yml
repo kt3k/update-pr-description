@@ -2,7 +2,7 @@ name: 'Update Pull Request Description on Push'
 description: 'GitHub Action that updates the pull request description and title'
 author: 'Yoshiya Hinosawa'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'index.js'
   pre: 'deps.js'
 inputs:
