@@ -6,11 +6,7 @@ const run = async () => {
   const prTitle = core.getInput('pr_title');
   const prBody = core.getInput('pr_body');
   const baseBranch = core.getInput('destination_branch');
-  // On 'push' events, github.context.ref is in format 'refs/heads/<sourceBranch>'
-  // On 'pull_request' events, github.contest.ref is in format 'refs/pull/<pullRequestNumber>/merge'
-  // See https://docs.github.com/en/actions/learn-github-actions/environment-variables
-  let sourceBranch = github.context.ref.match(/^refs\/heads\/(.?)$/)?.[1];
-  const sourcePullRequestNumber = github.context.ref.match(/^refs\/pull\/(\d+)\/merge/)?.[1];
+  const sourceBranch = github.context.ref.replace(/^refs\/heads\//, '');
 
   const credentials = {
     owner: github.context.repo.owner,
@@ -18,46 +14,26 @@ const run = async () => {
   };
 
   const octokit = github.getOctokit(githubToken);
+  core.info(`Looking up a pull request with a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
 
-  let pullRequest;
-  if (sourceBranch) { // 'push' event
-    core.info(`Looking up a pull request with a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
+  const branchHead = `${credentials.owner}:${sourceBranch}`;
+  const { data: pulls } = await octokit.rest.pulls.list({
+    ...credentials,
+    base: baseBranch,
+    head: branchHead,
+  });
 
-    const branchHead = `${credentials.owner}:${sourceBranch}`;
-    const { data: pulls } = await octokit.rest.pulls.list({
-      ...credentials,
-      base: baseBranch,
-      head: branchHead,
-    });
+  if (pulls.length === 0) {
+    throw new Error(`No pull request found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
+  }
 
-    if (pulls.length === 0) {
-      throw new Error(`No pull request found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
-    }
-
-    pullRequest = pulls.find((p) => p.state === 'open');
-    if (pullRequest == null) {
-      throw new Error(`No open pull requests found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
-    }
-  } else { // 'pull_request' event
-    core.info(`Looking up a pull request #${sourcePullRequestNumber}`);
-
-    ({ data: pullRequest } = await octokit.rest.pulls.get({
-      ...credentials,
-      pull_number: sourcePullRequestNumber,
-    }));
-
-    if (pullRequest == null) {
-      throw new Error(`Pull request #${sourcePullRequestNumber} was not found`);
-    }
-    if (pullRequest.state !== 'open') {
-      throw new Error(`Pull request #${sourcePullRequestNumber} is not open`);
-    }
-
-    sourceBranch = pullRequest.head.ref;
+  const pullRequest = pulls.find((p) => p.state === 'open');
+  if (pullRequest == null) {
+    throw new Error(`No open pull requests found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
   }
 
   const { number: pullNumber, base: { ref: pullRequestTargetBranch } } = pullRequest;
-  core.info(`Pull request #${pullNumber} has been found for a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
+  core.info(`Pull request #${pullNumber} has been found for  a source branch "${sourceBranch || '<not found>'}" and a base branch "${baseBranch || '<not specified>'}"`);
 
   const params = {
     ...credentials,
