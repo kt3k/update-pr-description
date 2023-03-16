@@ -16,13 +16,13 @@ jobs:
   pull-request:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v3
     - name: pull-request
       uses: repo-sync/pull-request@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: update-pull-request
-      uses: kt3k/update-pr-description@v1.0.1
+      uses: kt3k/update-pr-description@v2
       with:
         pr_body: "**some description**"
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -44,7 +44,7 @@ jobs:
   pull-request:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v3
     - name: create-description
       run: "some script for creating PR description from the branch diff"
       id: description
@@ -55,7 +55,7 @@ jobs:
         destination_branch: release
         pr_title: Release
     - name: update-pull-request
-      uses: kt3k/update-pr-description@v1.0.1
+      uses: kt3k/update-pr-description@v2
       with:
         pr_body: ${{ steps.description.outputs.description }}
         destination_branch: release
